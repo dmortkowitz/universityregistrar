@@ -1,0 +1,32 @@
+@{
+  Layout = "_Layout";
+}
+
+<h1 class="mt-5">All courses</h1>
+<a href="/courses/new" class="btn btn-secondary my-3">Add a course.</a>
+<a href="/" class="btn btn-secondary mx-3">Back to main</a>
+<div class="table-responsive mt-2">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Course ID</th>
+        <th scope="col">Course Name</th>
+        <th scope="col">Course Number</th>
+        <th scope="col">Update</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var course in @Model)
+      {
+      <tr>
+        <th scope="row">@course.Id</th>
+        <td><a href="/courses/@course.Id">@course.Name</a></td>
+        <td>@course.CourseNumber</td>
+        <td><a href="/courses/edit/@course.Id" class="btn btn-warning">Update</a></td>
+        <td><form action="/courses/delete/@course.Id" method="post"><button type="submit" class="btn btn-danger">Delete</button></form></td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

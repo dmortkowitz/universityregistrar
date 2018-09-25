@@ -86,6 +86,35 @@ namespace UniversityRegistrar.Models
       return allStudents;
     }
 
+    public List<Course> GetAllCourses()
+    {
+      List <Course> courses = new List <Course>{};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT student_course.id, student_course.student_id, students.name AS student_name, students.enrollment_date, student_course.course_id, courses.name AS course_name, courses.course_number FROM students JOIN student_course ON student_course.student_id = students.id JOIN courses ON student_course.course_id = courses.id WHERE student_course.student_id = @studentId;";
+      cmd.Parameters.AddWithValue("@studentId", this.Id);
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+
+      while (rdr.Read())
+      {
+        int course_id = rdr.GetInt32(4);
+        string course_name = rdr.GetString(5);
+        string course_number = rdr.GetString(6);
+
+        Course foundCourse = new Course(course_name, course_number, course_id);
+        courses.Add(foundCourse);
+      }
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return courses;
+    }
+
     public static Student Find(int id)
     {
       MySqlConnection conn = DB.Connection();
@@ -154,6 +183,10 @@ namespace UniversityRegistrar.Models
       conn.Open();
 
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+
+      cmd.CommandText = @"DELETE FROM student_course;";
+      cmd.ExecuteNonQuery();
+
       cmd.CommandText = @"DELETE FROM students;";
       cmd.ExecuteNonQuery();
 

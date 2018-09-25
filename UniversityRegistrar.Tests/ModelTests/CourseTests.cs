@@ -22,6 +22,8 @@ namespace UniversityRegistrar.Tests
       cmd.ExecuteNonQuery();
       cmd.CommandText = @"ALTER TABLE courses AUTO_INCREMENT = 1;";
       cmd.ExecuteNonQuery();
+      cmd.CommandText = @"ALTER TABLE student_course AUTO_INCREMENT = 1;";
+      cmd.ExecuteNonQuery();
 
       conn.Close();
       if (conn != null)
@@ -69,6 +71,21 @@ namespace UniversityRegistrar.Tests
     }
 
     [TestMethod]
+    public void AddStudent_SaveToDatabase_List()
+    {
+      //Arrange
+      Course firstCourse = new Course("Database", "CS210");
+      firstCourse.Save();
+      Student firstStudent = new Student("Hyewon Cho", new DateTime(2018, 9, 24, 9, 0, 30));
+      firstStudent.Save();
+      List <Student> expectedStudents = new List<Student> {firstStudent};
+      //Act
+      firstCourse.AddStudent(firstStudent.Id);
+      List <Student> students = firstCourse.GetAllStudents();
+      //Assert
+      CollectionAssert.AreEqual(expectedStudents, students);
+    }
+    [TestMethod]
     public void GetAll_ReturnCourseCorrectly_List()
     {
       //Arrange
@@ -82,6 +99,25 @@ namespace UniversityRegistrar.Tests
       //Assert
       CollectionAssert.AreEqual(expectedCourses, courses);
     }
+    [TestMethod]
+    public void GetAllStudents_ReturnStudentsCorrectly_List()
+    {
+      //Arrange
+      Course firstCourse = new Course("Database", "CS210");
+      firstCourse.Save();
+      Student firstStudent = new Student("Hyewon Cho", new DateTime(2018, 9, 24, 9, 0, 30));
+      firstStudent.Save();
+      Student secondStudent = new Student("Hyeryun Cho", new DateTime (2018, 9, 23, 9, 0, 30));
+      secondStudent.Save();
+      List<Student> expectedStudents = new List<Student> {firstStudent, secondStudent};
+      firstCourse.AddStudent(firstStudent.Id);
+      firstCourse.AddStudent(secondStudent.Id);
+      //Act
+      List<Student> students = firstCourse.GetAllStudents();
+      //Assert
+      CollectionAssert.AreEqual(expectedStudents, students);
+    }
+
     [TestMethod]
     public void Find_FindCourseInDatabase_Course()
     {
@@ -106,6 +142,21 @@ namespace UniversityRegistrar.Tests
       firstCourseCopy.Name = newName;
       //Assert
       Assert.AreEqual(firstCourseCopy, firstCourse);
+    }
+    [TestMethod]
+    public void Delete_DeleteCourseFromDatabase_Course()
+    {
+      //Arrange
+      Course firstCourse = new Course("Database", "CS210");
+      firstCourse.Save();
+      Course secondCourse = new Course("Discrete Mathematics", "CS220");
+      secondCourse.Save();
+      List<Course> expectedCourses = new List<Course>{firstCourse};
+      //Act
+      Course.Delete(secondCourse.Id);
+      List<Course> courses = Course.GetAll();
+      //Assert
+      CollectionAssert.AreEqual(expectedCourses, courses);
     }
   }
 }

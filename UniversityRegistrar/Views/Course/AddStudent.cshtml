@@ -1,0 +1,21 @@
+@{
+  Layout = "_Layout";
+}
+
+<h1 class="my-3">Add student to @Model.Name</h1>
+<form action="/courses/@Model.Id/students/new" method="post">
+  <div class="form-group">
+    <label for="student_id">Select student</label>
+    <select name="student_id" class="form-control" id="student_id">
+      @foreach (var student in UniversityRegistrar.Models.Student.GetAll())
+      {
+        @if (!@Model.GetAllStudents().Contains(@student))
+        {
+          <option value="@student.Id">@student.Name</option>
+        }
+      }
+    </select>
+  </div>
+  <button type="submit" class="btn btn-warning">Register</button>
+  <a href="/courses/@Model.Id" class="btn btn-secondary mx-3">Back to course details</a>
+</form>

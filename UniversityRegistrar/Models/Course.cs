@@ -59,6 +59,25 @@ namespace UniversityRegistrar.Models
       }
     }
 
+    public void AddStudent(int studentId)
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO student_course (student_id, course_id) VALUES (@studentId, @courseId);";
+
+      cmd.Parameters.AddWithValue("@studentId", studentId);
+      cmd.Parameters.AddWithValue("@courseId", this.Id);
+      cmd.ExecuteNonQuery();
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
+
     public static List<Course> GetAll()
     {
       List<Course> allCourses = new List<Course> {};
@@ -84,6 +103,36 @@ namespace UniversityRegistrar.Models
         conn.Dispose();
       }
       return allCourses;
+    }
+
+    public List<Student> GetAllStudents()
+    {
+      List <Student> allStudents = new List<Student>{};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT student_course.id, student_course.student_id, students.name AS student_name, students.enrollment_date, student_course.course_id, courses.name AS course_name FROM students JOIN student_course ON student_course.student_id = students.id JOIN courses ON student_course.course_id = courses.id WHERE student_course.course_id = @courseId;";
+
+      // CREATE VIEW student_course_view AS SELECT student_course.id, student_course.student_id, students.name AS student_name, students.enrollment_date, student_course.course_id, courses.name AS course_name FROM students JOIN student_course ON student_course.student_id = students.id JOIN courses ON student_course.course_id = courses.id WHERE student_course.course_id = @courseId;
+
+      cmd.Parameters.AddWithValue("@courseId", this.Id);
+
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      while (rdr.Read())
+      {
+        int student_id = rdr.GetInt32(1);
+        string student_name = rdr.GetString(2);
+        DateTime student_enrollment_date = rdr.GetDateTime(3);
+        Student foundStudent = new Student(student_name, student_enrollment_date, student_id);
+        allStudents.Add(foundStudent);
+      }
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return allStudents;
     }
 
     public static Course Find(int id)
@@ -142,6 +191,10 @@ namespace UniversityRegistrar.Models
       cmd.Parameters.AddWithValue("@id", id);
       cmd.ExecuteNonQuery();
 
+      cmd.CommandText = @"DELETE FROM student_course WHERE course_id = @id;";
+      cmd.Parameters.AddWithValue("@id", id);
+      cmd.ExecuteNonQuery();
+
       conn.Close();
       if (conn != null)
       {
@@ -155,6 +208,9 @@ namespace UniversityRegistrar.Models
       conn.Open();
 
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"DELETE FROM student_course;";
+      cmd.ExecuteNonQuery();
+
       cmd.CommandText = @"DELETE FROM courses;";
       cmd.ExecuteNonQuery();
 

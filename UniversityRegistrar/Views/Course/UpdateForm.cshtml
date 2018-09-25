@@ -1,0 +1,12 @@
+@{
+Layout = "_Layout";
+}
+
+<h1>Update course details.</h1>
+<form action="/courses/edit/@Model.Id" method="post">
+  <div class="form-group">
+    <label for="newCourseName">New course name.</label>
+    <input type="text" class="form-control" name="newCourseName" id="newCourseName" value="@Model.Name">
+  </div>
+  <button type="submit" class="btn btn-warning">Change course details.</button>
+</form>

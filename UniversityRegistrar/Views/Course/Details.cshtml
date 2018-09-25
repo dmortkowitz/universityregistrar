@@ -1,0 +1,28 @@
+@{
+  Layout = "_Layout";
+}
+
+<h1 class="mt-5">@Model["course"].CourseNumber @Model["course"].Name details</h1>
+<a href="/courses/@Model["course"].Id/students/new" class="btn btn-info my-3">Add a student</a>
+<a href="/courses" class="btn btn-secondary mx-3 my-3">Back to courses</a>
+<h2>Enrolled students</h2>
+<div class="table-responsive">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Student ID</th>
+      <th scope="col">Student Name</th>
+      <th scope="col">Enrollment Date</th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var student in @Model["students"])
+  {
+    <tr>
+      <th scope="row">@student.Id</th>
+      <td>@student.Name</td>
+      <td>@student.EnrollmentDate</td>
+    </tr>
+  }
+  </tbody>
+</div>

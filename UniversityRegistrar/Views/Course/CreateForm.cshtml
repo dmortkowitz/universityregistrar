@@ -1,0 +1,17 @@
+@{
+  Layout = "_Layout";
+}
+
+<h1 class="my-3">Add course.</h1>
+<form action="/courses" method="post">
+  <div class="form-group">
+    <label for="courseName">Course name.</label>
+    <input type="text" class="form-control" id="courseName" name="courseName">
+  </div>
+  <div class="form-group">
+    <label for="courseNumber">Course number.</label>
+    <input type="text" class="form-control" id="courseNumber" name="courseNumber">
+  </div>
+  <button type="submit" class="btn btn-warning mr-2">Register</button>
+  <a href="/courses" class="btn btn-secondary">Back to courses.</a>
+</form>
